@@ -5,6 +5,7 @@ import cristianmartucci.U5_W1_D3.entities.Product;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -16,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class U5W1D3ApplicationTests {
+	@Autowired
+	private AnnotationConfigApplicationContext ctx;
 
 	@Test
 	void addProductToOrder() {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(U5W1D3Application.class);
 		Order order1 = (Order) ctx.getBean("order1");
 		order1.setProducts(List.of((Product) ctx.getBean("pizza margherita")));
-		ctx.close();
 		assertEquals(1, order1.getProducts().size());
 	}
 
@@ -35,35 +36,29 @@ class U5W1D3ApplicationTests {
 	@ParameterizedTest
 	@CsvSource({"pizza margherita, 4.99", "lemonade, 1.29", "wine, 7.49" })
 	void testMenuPrice(String productName, double productPrice){
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(U5W1D3Application.class);
 		Product product = (Product) ctx.getBean(productName);
-		ctx.close();
 		assertEquals(product.getPrice(), productPrice);
 	}
 
 	@ParameterizedTest
 	@CsvSource({"order1, 18.06", "order2, 32.04"})
 	void testTotalPriceOrder(String orderName, double price){
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(U5W1D3Application.class);
 		Order order = (Order) ctx.getBean(orderName);
 		double total = 0;
 		for(Product product: order.getProducts()){
 			total += product.getPrice();
 		}
 		total += order.getCost_covered() * order.getNumbered_covered();
-		ctx.close();
 		assertEquals(total, price);
 	}
 
 	@ParameterizedTest
 	@CsvSource({"pizza margherita, hawaiian pizza, salami pizza, 17.47"})
 	void testSum3Product(String product1, String product2, String product3, double result){
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(U5W1D3Application.class);
 		Product p1 = (Product) ctx.getBean(product1);
 		Product p2 = (Product) ctx.getBean(product2);
 		Product p3 = (Product) ctx.getBean(product3);
 		double sumTotal = p1.getPrice() + p2.getPrice() + p3.getPrice();
-		ctx.close();
 		assertEquals(sumTotal,result);
 	}
 }
